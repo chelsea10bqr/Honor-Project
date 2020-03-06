@@ -1,0 +1,12 @@
+// Symbol table
+// Scope level 0:
+//	Symbol Name       Page Address
+//	----------------  ------------
+//	STR1              5050
+//	STR2              5055
+//	STR3              5058
+//	STR4              505A
+//	STR5              505F
+//	STR6              5068
+//	STR7              506C
+

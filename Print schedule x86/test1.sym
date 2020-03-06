@@ -1,0 +1,33 @@
+// Symbol table
+// Scope level 0:
+//	Symbol Name       Page Address
+//	----------------  ------------
+//	R0_OK             3010
+//	BITS              3011
+//	VLINE             3012
+//	R0_BAD            3013
+//	PRINT_CENTERED    302B
+//	LOOP              3036
+//	FINISHED          303B
+//	CONTINUE          3042
+//	PRINT             3046
+//	PRINT_SPACE       3047
+//	PRINT_CHAR        304C
+//	TRAILING          3051
+//	OVER              3056
+//	LOAD              305A
+//	TWO               3063
+//	NUM_1             3064
+//	NUM_2             3065
+//	SYMBOL            3066
+//	SPACE             3067
+//	SAVE_R1           3068
+//	SAVE_R7           3069
+//	SAVE_R6           306A
+//	SAVE_R0           306B
+//	SAVE_R5           306C
+//	SAVE_R4           306D
+//	SAVE_R3           306E
+//	SAVE_R2           306F
+//	STRING            3070
+

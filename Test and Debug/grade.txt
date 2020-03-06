@@ -1,0 +1,17 @@
+Grade:
+********************
+Late submission: 0
+printRev Identifying Bugs: 10
+printRev Tracing Bugs: 10
+printRev Analysis:  10
+********************
+primeNumber Identifying Bugs: 10
+primeNumber Tracing Bugs: 10
+primeNumber Analysis:  10
+********************
+sort Identifying Bugs: 0
+sort Tracing Bugs: 10
+sort Analysis:  0
+********************
+Style: 10
+Total: 80

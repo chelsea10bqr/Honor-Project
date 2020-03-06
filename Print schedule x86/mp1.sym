@@ -1,0 +1,19 @@
+// Symbol table
+// Scope level 0:
+//	Symbol Name       Page Address
+//	----------------  ------------
+//	PRINT_SLOT        3000
+//	ZERO              3010
+//	ONE               3019
+//	DONE              3020
+//	PRINT_CENTERED    302C
+//	TWO               302C
+//	NUM_1             302D
+//	NUM_2             302E
+//	SYMBOL            302F
+//	SPACE             3030
+//	SAVE_R1           3031
+//	SAVE_R7           3032
+//	SAVE_R6           3033
+//	SAVE_R0           3034
+

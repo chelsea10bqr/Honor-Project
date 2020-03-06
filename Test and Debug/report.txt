@@ -1,0 +1,484 @@
+For the first program printRev, I have used several test case:
+1. chelsea  desired ouput( "chelsea" reversed is "aeslehc" (length 7) )
+            actual output( "chelsea" reversed is "aeslehc" (length 7) )
+            correct!
+2. c        desired output( "c" reversed is "c" (length 1) )
+            actual output( "c" reversed is "c" (length 1) )
+            correct!
+3. chel     desired ouput( "chel" reversed is "lehc" (length 4) )
+            actual output( "chel" reversed is "lehc" (length 52) )
+            WRONG!
+4. chels    desired ouput( "chels" reversed is "slehc" (length 5) )
+            actual ouput( "chels" reversed is "slehc" (length 32772) )
+            WRONG!
+Besides these cases, I also test some other cases (8,9,18) the output is sometimes correct and sometimes wrong.
+For case length 8
+actual output("iejdk123" reversed is "321kdjei" (length 8)) first time
+"iejdk" reversed is "kdjei" (length 32769) second time
+
+Then I use GDB to trace the bug
+GDB commands I used:
+gdb prev
+
+Result:For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /home/quanrui2/quanrui2/MP7H/printRev/prev...done.
+
+break pr_buggy.c:40
+break pr_buggy.c:45
+
+Result:Breakpoint 1 at 0x400609: file pr_buggy.c, line 40.
+       Breakpoint 2 at 0x400619: file pr_buggy.c, line 45.
+
+run chel
+
+Result:Starting program: /home/quanrui2/quanrui2/MP7H/printRev/prev chel
+
+Breakpoint 1, print_reverse (s=0x7fffffffe0b4 "chel") at pr_buggy.c:40
+40	    if ('\0' == *s) {
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-196.el7_4.2.x86_64
+
+print rest
+
+Result:$1 = 32767
+
+finish
+
+Result:Run till exit from #0  print_reverse (s=0x7fffffffe0b4 "chel") at pr_buggy.c:40
+
+Breakpoint 2, print_reverse (s=0x7fffffffe0b4 "chel") at pr_buggy.c:45
+45	    rest = print_reverse (s + 1);
+
+/*and Then I use "finish" command for many times and got the return value*/
+return result: Value returned is $2 = 48
+               Value returned is $3 = 49
+               /* stop at "Value returned is $6 = 52"/
+
+Analysis: At this point, we got the 52 which is wrong, but it matches our actual output. For this perspective, when the program reached the first breakpoint, print rest, the rest value is 32767/
+
+Analysis of the bug: According to that, I guess that the rest value is not be initialized in pr_buggy.c. Then I initialize the rest at the beginning of pr_buggy.c   int32_t rest = 0, the problem is solved.
+
+
+For the second program primeNumber , I just run this program:
+The goal of this program is that printing all prime number under 1000, however I got many non-prime numbers in my output
+such as 
+"4 is prime. 
+9 is prime.
+49 is prime."
+I found that the total numer this program prints is 11 more than the correct output.
+4,9, 25, 49, 121, 169 , 289, 361 ,529,841,961
+which are the square number of 2,3,5,7,11,13,17,19,23,29,31( prime numbers)
+Conclusion: this programe will print the square numbers(less than 1000) which are not the prime number of prime numbers.
+
+Trace the bug by GDB:
+GDB commands I used:
+gdb primeNumber.c
+
+RESULT:Reading symbols from /home/quanrui2/quanrui2/MP7H/primeNumber/primeNumber...done.
+
+break primeNumber.c:61
+
+RESULT:Breakpoint 1 at 0x40057e: file primeNumber.c, line 61.
+
+run
+
+RESULT:Starting program: /home/quanrui2/quanrui2/MP7H/primeNumber/primeNumber 
+2 is prime.
+3 is prime.
+4 is prime.
+
+ANALYSIS: At this point, we found that this program assume 2,3,4(they are not test by the divides_evenly) are primes, however 4 is not prime at all.
+
+Then I just repeatedly use" continue" command
+
+RESULT:
+Breakpoint 1, divides_evenly (divisor=2, value=5) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+5 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=6) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=7) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+7 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=8) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=9) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+9 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=10) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=11) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=11) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+11 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=12) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=13) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=13) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+13 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=14) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=15) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=15) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=16) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=17) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=17) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=17) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+17 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=18) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=19) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=19) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=19) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+19 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=20) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=21) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=21) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=22) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=23) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=23) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=23) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+23 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=24) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=25) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=25) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=25) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) continue
+Continuing.
+25 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=26) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=27) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=27) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=28) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=29) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=29) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=29) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=5, value=29) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+29 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=30) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=31) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=31) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=31) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=5, value=31) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+31 is prime.
+
+Breakpoint 1, divides_evenly (divisor=2, value=32) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=33) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=33) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=34) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=35) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=35) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=35) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=5, value=35) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=36) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=2, value=37) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=3, value=37) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=4, value=37) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=5, value=37) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+(gdb) 
+Continuing.
+
+Breakpoint 1, divides_evenly (divisor=6, value=37) at primeNumber.c:67
+67	    multiple = (value / divisor) * divisor;
+
+ANALYSIS: I found that for every test value, and it is divided by a divisor(start from 2) and multiple this divisor, if it can get the original value return 1, which means it is not a prime, stop this loop. BUT! this divisor will stop if its square number is larger or equal than value we test. For example, 26 will test the factor from 2 to 5, however 25 will only test from 2 to 4, which will lead a mistake that 25 is a prime.
+
+ANALYSIS of the BUG:
+ROOT causes of the bug has 2:
+1.this program assumes that 4 is a prime, which is wrong. It should test from number 4.
+2.When this program calls divides_evenly function, some square numbers of primes will not be detected, because the divisor cannot be the square root of this value. 
+The solution maybe that the square number of divisor should be less or equal to the value it tests.
+
+
+
+For the third program sort.
+I created out.txt and print input.
+run out.txt in GDB:
+first case: length 5 (21 32 3 92 22) expected output (3 21 22 32 92)
+                                     actual output( 3 3 21 22 32)
+               WRONG case
+HOWEVER, when I try this case again, I get the correct output( 3 21 22 32 92)
+
+Then second case:length 6(52 49 3 135 42 0 ) expected output( 0 3 42 49 52 135 )
+                                    actual output(0 3 42 49 52 135 )
+                        CORRECT
+HOWEVER, when I try this case again, I get the WRONG output( 0 2 3 42 49 52) or (0 3 4 42 49 52)
+
+After this two cases, I have tried many other cases, the result is the same.
+For some case , I have tried many times and get correct output, and for the next time, it get the wrong output.
+
+So, I conclude that this bug may have the property randomness, which means every case can have wrong output. 
+
+Trace the BUG by GDB:( for this case I use a very simple one (15 10 55),and I tried many times, finally get the wrong output, so the following process will get the wrong output)
+gdb sort
+
+RESULT:Reading symbols from /home/quanrui2/quanrui2/MP7H/sort/sort...done.
+
+break sort.c:3
+
+RESULT:Breakpoint 1 at 0x400799: file sort.c, line 3.
+
+break sort.c:18
+
+RESULT:Breakpoint 2 at 0x400822: file sort.c, line 18.
+
+run out.txt
+
+RESULT:Starting program: /home/quanrui2/quanrui2/MP7H/sort/sort out.txt
+
+Breakpoint 2, heapify (arr=0x603250, n=3, i=0) at sort.c:20
+20	    int largest = i;  // Initialize largest as root
+
+continue
+
+RESULT:Breakpoint 1, swap (a=0x603250, b=0x60325c) at sort.c:4
+4	int t = *a; 
+
+backtrace
+
+RESULT:
+#0  swap (a=0x603250, b=0x60325c) at sort.c:4
+#1  0x0000000000400a04 in heapSort ()
+#2  0x0000000000400b68 in main ()
+
+ANALYSIS: At this point, through backtrace, when SWAP is firstly called,  I found that swap function is not called by heapify, so it is called by heapSort. 
+
+0x603250 AND 0x50325c show that it swap the arr[0],arr[3]. However arr[3] is not in the arry, it swap the extra value out of the array. 
+
+
+
+
+
+
+
+ 
+
+
+
+
+ 
+ 
+
+ 
+
+
